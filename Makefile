@@ -18,14 +18,15 @@ SRCS_CLIENT = srcs/client/main.c
 
 PRINTF_DIR = printf
 LIBFT_DIR = libft
+GNL_DIR = get_next_line
 
 PRINTF_LIB = $(PRINTF_DIR)/libftprintf.a
 LIBFT_LIB = $(LIBFT_DIR)/libft.a
-
+GNL_LIB = $(GNL_DIR)/gnl.a
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-all: $(PRINTF_LIB) $(LIBFT_LIB) $(NAME_SERVER) $(NAME_CLIENT)
+all: $(PRINTF_LIB) $(LIBFT_LIB) $(GNL_LIB) $(NAME_SERVER) $(NAME_CLIENT)
 
 $(PRINTF_LIB):
 	make -C $(PRINTF_DIR)
@@ -33,20 +34,25 @@ $(PRINTF_LIB):
 $(LIBFT_LIB):
 	make -C $(LIBFT_DIR)
 
-$(NAME_SERVER): $(SRCS_SERVER) $(PRINTF_LIB) $(LIBFT_LIB)
-	$(CC) $(CFLAGS) -o $(NAME_SERVER) $(SRCS_SERVER) $(PRINTF_LIB) $(LIBFT_LIB)
+$(GNL_LIB):
+	make -C $(GNL_DIR)
 
-$(NAME_CLIENT): $(SRCS_CLIENT) $(PRINTF_LIB) $(LIBFT_LIB)
-	$(CC) $(CFLAGS) -o $(NAME_CLIENT) $(SRCS_CLIENT) $(PRINTF_LIB) $(LIBFT_LIB)
+$(NAME_SERVER): $(SRCS_SERVER) $(PRINTF_LIB) $(LIBFT_LIB) $(GNL_LIB)
+	$(CC) $(CFLAGS) -o $(NAME_SERVER) $(SRCS_SERVER) $(PRINTF_LIB) $(LIBFT_LIB) $(GNL_LIB)
+
+$(NAME_CLIENT): $(SRCS_CLIENT) $(PRINTF_LIB) $(LIBFT_LIB) $(GNL_LIB)
+	$(CC) $(CFLAGS) -o $(NAME_CLIENT) $(SRCS_CLIENT) $(PRINTF_LIB) $(LIBFT_LIB) $(GNL_LIB)
 
 clean:
 	make -C $(PRINTF_DIR) clean
 	make -C $(LIBFT_DIR) clean
+	make -C $(GNL_DIR) clean
 	rm -f $(NAME_SERVER) $(NAME_CLIENT)
 
 fclean: clean
 	make -C $(PRINTF_DIR) fclean
 	make -C $(LIBFT_DIR) fclean
+	make -C $(GNL_DIR) fclean
 
 re: fclean all
 

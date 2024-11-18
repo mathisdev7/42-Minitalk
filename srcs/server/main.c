@@ -12,40 +12,72 @@
 
 #include "../../includes/server.h"
 #include "../../printf/ft_printf.h"
+#include "../../get_next_line/get_next_line.h"
 
 void	signal_handler(int signal, siginfo_t *info, void *context)
 {
-	static int						bit_count = 0;
-	static unsigned char			character = 0;
+	static int				bit_count = 0;
+	static unsigned char	character = 0;
 
-	(void) context;
-	(void) info;
-	character |= (signal == SIGUSR2) << bit_count;
+	(void)context;
+	if (signal == SIGUSR2)
+		character |= (1 << bit_count);
 	bit_count++;
 	if (bit_count == 8)
 	{
 		if (character == '\0')
-			write(1, "\033[0m\n", 5);
+		{
+			write(1, "\n", 1);
+			kill(info->si_pid, SIGUSR1);
+		}
 		else
-			ft_printf("\033[34m%c\033[0m", character);
+			write(1, &character, 1);
 		bit_count = 0;
 		character = 0;
 	}
 }
-/*
-int main() {
-    struct sigaction sa;
 
-    sa.sa_sigaction = signal_handler;
-    sa.sa_flags = SA_SIGINFO;
-    sigaction(SIGUSR1, &sa, NULL);
-    sigaction(SIGUSR2, &sa, NULL);
+int show_pid(void)
+{
+	char	*line;
+	int		fd;
+	int		flag;
 
-    ft_printf("\033[32mServer PID: %d\033[0m\n", getpid());
-
-    while (1) {
-        pause();
-    }
-    return 0;
+	flag = 0;
+	fd = open("minitalk.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		ft_printf("Error: Could not open file\n");
+		return (1);
+	}
+	while ((line = get_next_line(fd)))
+	{
+		flag++;
+		if (flag % 2)
+			ft_printf("\033[32m%s\033[0m", line);
+		else
+			ft_printf("%s", line);
+		free(line);
+	}
+	ft_printf("\033[32mServer PID: %d\033[0m\n", getpid());
+	return (0);
 }
-*/
+
+int	main(void)
+{
+    struct				sigaction	sa;
+
+	system("clear");
+	sa.sa_sigaction = signal_handler;
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+	if (show_pid() == 1)
+		return (1);
+	while (1)
+		pause();
+	return (0);
+}
+
+
+
