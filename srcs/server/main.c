@@ -6,13 +6,13 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:27:49 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/18 16:27:49 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/19 00:04:51 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../get_next_line/get_next_line.h"
 #include "../../includes/server.h"
 #include "../../printf/ft_printf.h"
-#include "../../get_next_line/get_next_line.h"
 
 void	signal_handler(int signal, siginfo_t *info, void *context)
 {
@@ -37,7 +37,7 @@ void	signal_handler(int signal, siginfo_t *info, void *context)
 	}
 }
 
-int show_pid(void)
+int	show_pid(void)
 {
 	char	*line;
 	int		fd;
@@ -50,8 +50,11 @@ int show_pid(void)
 		ft_printf("Error: Could not open file\n");
 		return (1);
 	}
-	while ((line = get_next_line(fd)))
+	while (1)
 	{
+		line = get_next_line(fd);
+		if (!line)
+			break ;
 		flag++;
 		if (flag % 2)
 			ft_printf("\033[32m%s\033[0m", line);
@@ -65,7 +68,7 @@ int show_pid(void)
 
 int	main(void)
 {
-    struct				sigaction	sa;
+	struct sigaction	sa;
 
 	system("clear");
 	sa.sa_sigaction = signal_handler;
@@ -78,6 +81,3 @@ int	main(void)
 		pause();
 	return (0);
 }
-
-
-

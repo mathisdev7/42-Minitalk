@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/11 15:25:59 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/18 23:17:21 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/19 00:01:20 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,8 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	if (!s1 || !s2)
 		return (NULL);
-	joined = malloc(sizeof(char) * ((ft_strlen_gnl(s1) + ft_strlen_gnl(s2)) + 1));
+	joined = malloc(sizeof(char) * ((ft_strlen_gnl(s1)
+					+ ft_strlen_gnl(s2)) + 1));
 	if (joined == NULL)
 		return (NULL);
 	i = -1;

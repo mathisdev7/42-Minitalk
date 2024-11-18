@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:08:45 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/18 17:08:45 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/19 00:05:56 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,35 @@
 #include "../../printf/ft_printf.h"
 #include <locale.h>
 
-void send_char(pid_t server_pid, unsigned char c)
+void	send_char(pid_t server_pid, unsigned char c)
 {
-    for (int i = 0; i < 8; i++)
-    {
-        if (c & (1 << i))
-            kill(server_pid, SIGUSR2);
-        else
-            kill(server_pid, SIGUSR1);
+	int	i;
 
-        usleep(500);
-    }
+	i = 0;
+	while (i < 8)
+	{
+		if (c & (1 << i))
+			kill(server_pid, SIGUSR2);
+		else
+			kill(server_pid, SIGUSR1);
+		i++;
+		usleep(500);
+	}
 }
 
-void send_message(pid_t server_pid, const char *message)
+void	send_message(pid_t server_pid, const char *message)
 {
-    int i = 0;
+	int				i;
+	unsigned char	c;
 
-    while (message[i] != '\0')
-    {
-        unsigned char c = message[i];
-        send_char(server_pid, c);
-        i++;
-    }
-    send_char(server_pid, '\0');
+	i = 0;
+	while (message[i] != '\0')
+	{
+		c = message[i];
+		send_char(server_pid, c);
+		i++;
+	}
+	send_char(server_pid, '\0');
 }
 
 void	signal_handler(int signal)
@@ -49,20 +54,22 @@ void	signal_handler(int signal)
 	}
 }
 
-int	main(int argc, char **argv) {
+int	main(int argc, char **argv)
+{
 	int		i;
+	pid_t	server_pid;
+	char	*message;
 
 	i = 0;
-    if (argc != 3) {
-        ft_printf("Usage: ./client <server_pid> <message>\n");
-        return 1;
-    }
+	if (argc != 3)
+	{
+		ft_printf("Usage: ./client <server_pid> <message>\n");
+		return (1);
+	}
 	setlocale(LC_CTYPE, "en_US.UTF-8");
-
-    pid_t server_pid = atoi(argv[1]);
-    char *message = argv[2];
-
-    signal(SIGUSR1, signal_handler);
+	server_pid = atoi(argv[1]);
+	message = argv[2];
+	signal(SIGUSR1, signal_handler);
 	while (message[i])
 	{
 		send_char(server_pid, message[i]);
@@ -70,5 +77,5 @@ int	main(int argc, char **argv) {
 	}
 	send_char(server_pid, '\0');
 	pause();
-    return (0);
+	return (0);
 }
