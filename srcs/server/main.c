@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:27:49 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/19 00:04:51 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/19 16:04:58 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,70 +14,69 @@
 #include "../../includes/server.h"
 #include "../../printf/ft_printf.h"
 
-void	signal_handler(int signal, siginfo_t *info, void *context)
-{
-	static int				bit_count = 0;
-	static unsigned char	character = 0;
+char *g_str;
 
-	(void)context;
-	if (signal == SIGUSR2)
-		character |= (1 << bit_count);
-	bit_count++;
-	if (bit_count == 8)
+char	*ft_strjoin_mod(char *s1, char *s2)
+{
+	char	*join;
+	int		i;
+	int		j;
+
+	i = -1;
+	if (!s1)
 	{
-		if (character == '\0')
-		{
-			write(1, "\n", 1);
-			kill(info->si_pid, SIGUSR1);
-		}
-		else
-			write(1, &character, 1);
-		bit_count = 0;
-		character = 0;
+		s1 = malloc(sizeof(char) * 1);
+		s1[0] = '\0';
 	}
+	join = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!join)
+		return (NULL);
+	while (s1[++i] != '\0')
+		join[i] = s1[i];
+	j = 0;
+	while (s2[j] != '\0')
+		join[i++] = s2[j++];
+	join[i++] = '\0';
+	free(s1);
+	return (join);
 }
 
-int	show_pid(void)
+void	ft_listening_data(int sig)
 {
-	char	*line;
-	int		fd;
-	int		flag;
+	static int	bit;
+	static int	i;
+	char		*c1;
 
-	flag = 0;
-	fd = open("minitalk.txt", O_RDONLY);
-	if (fd == -1)
+	if (sig == SIGUSR1)
+		i |= (0x01 << bit);
+	bit++;
+	if (bit == 8)
 	{
-		ft_printf("Error: Could not open file\n");
-		return (1);
+		c1 = (char *)malloc(sizeof(char) * 2);
+		if (!c1)
+			return ;
+		c1[0] = (char)i;
+		c1[1] = '\0';
+		g_str = ft_strjoin_mod(g_str, c1);
+		if (c1[0] == '\n')
+		{
+			ft_putstr_fd(g_str, 1);
+			free(g_str);
+			g_str = NULL;
+		}
+		bit = 0;
+		i = 0;
+		free(c1);
 	}
-	while (1)
-	{
-		line = get_next_line(fd);
-		if (!line)
-			break ;
-		flag++;
-		if (flag % 2)
-			ft_printf("\033[32m%s\033[0m", line);
-		else
-			ft_printf("%s", line);
-		free(line);
-	}
-	ft_printf("\033[32mServer PID: %d\033[0m\n", getpid());
-	return (0);
 }
 
 int	main(void)
 {
-	struct sigaction	sa;
-
-	system("clear");
-	sa.sa_sigaction = signal_handler;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	if (show_pid() == 1)
-		return (1);
-	while (1)
+	ft_putstr_fd("Server PID: [", 1);
+	ft_printf("%d", (int) getpid());
+	ft_putstr_fd("]\n", 1);
+	signal(SIGUSR1, ft_listening_data);
+	signal(SIGUSR2, ft_listening_data);
+	while (1) 
 		pause();
-	return (0);
 }

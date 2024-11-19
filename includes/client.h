@@ -17,6 +17,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-void	send_char(pid_t server_pid, unsigned char c);
+void	convert_binary(int server_pid, unsigned char c);
+int	ft_atoi(const char *str);
 
 #endif

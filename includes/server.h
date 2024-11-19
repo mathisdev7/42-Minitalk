@@ -17,6 +17,6 @@
 # include <stdio.h>
 # include <unistd.h>
 
-void	signal_handler(int signal, siginfo_t *info, void *context);
+void	ft_listening_data(int sig);
 
 #endif
