@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:27:49 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/19 16:04:58 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/20 00:52:58 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "../../includes/server.h"
 #include "../../printf/ft_printf.h"
 
-char *g_str;
+char	*g_str;
 
 char	*ft_strjoin_mod(char *s1, char *s2)
 {
@@ -72,11 +72,29 @@ void	ft_listening_data(int sig)
 
 int	main(void)
 {
-	ft_putstr_fd("Server PID: [", 1);
-	ft_printf("%d", (int) getpid());
-	ft_putstr_fd("]\n", 1);
+	int		fd;
+	char	*line;
+	int		flag;
+
+	flag = 0;
+	fd = open("minitalk.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		ft_printf("Error: Could not open file\n");
+		return (1);
+	}
+	while ((line = get_next_line(fd)))
+	{
+		flag++;
+		if (flag % 2)
+			ft_printf("\033[32m%s\033[0m", line);
+		else
+			ft_printf("%s", line);
+		free(line);
+	}
+	ft_printf("\033[32mServer PID: %d\033[0m\n\033[32m[\033[0mNO BONUS MODE\033[32m]\033[0m\n", getpid());
 	signal(SIGUSR1, ft_listening_data);
 	signal(SIGUSR2, ft_listening_data);
-	while (1) 
+	while (1)
 		pause();
 }

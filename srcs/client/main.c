@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:08:45 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/19 16:19:01 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/20 00:45:02 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,17 +40,8 @@ void	send_msg(int pid, char *msg)
 	}
 }
 
-void	signal_handler(int signal)
-{
-	if (signal == SIGUSR1)
-	{
-		ft_printf("\033[32mMessage received!\033[0m\n");
-		exit(0);
-	}
-}
-
 int	main(int argc, char **argv)
-	{
+{
 	int	i;
 
 	i = 0;
@@ -59,12 +50,10 @@ int	main(int argc, char **argv)
 	while (argv[1][i] != '\0')
 	{
 		if (argv[1][i] < '0' || argv[1][i] > '9')
-			exit(write(1, "ERROR: PID invalid!\n", 20));
+			exit(write(1, "\033[31mERROR: PID invalid!\033[0m\n", 30));
 		i++;
 	}
 	send_msg(ft_atoi(argv[1]), argv[2]);
 	send_msg(ft_atoi(argv[1]), "\n");
-	if (argv[1][i] == '\0')
-		write(1, "Message sent!\n", 14);
 	return (0);
 }
