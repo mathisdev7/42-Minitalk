@@ -6,7 +6,7 @@
 #    By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/18 17:18:45 by mazeghou          #+#    #+#              #
-#    Updated: 2024/11/18 17:18:47 by mazeghou         ###   ########.fr        #
+#    Updated: 2024/11/20 01:10:53 by mazeghou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ OBJSALL = ${SRCSALL:.c=.o}
 
 LIB = libft.a
 
-CC = gcc
+CC = cc
 
 CFLAGS = -Wall -Werror -Wextra -I ./
 

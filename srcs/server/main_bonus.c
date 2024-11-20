@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:27:49 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/20 00:45:23 by mazeghou         ###   ########.fr       */
+/*   Updated: 2024/11/20 01:00:16 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,8 @@ int	main(void)
 
 	flag = 0;
 	fd = open("minitalk.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		ft_printf("Error: Could not open file\n");
-		return (1);
-	}
-	while ((line = get_next_line(fd)))
+	line = get_next_line(fd);
+	while (line)
 	{
 		flag++;
 		if (flag % 2)
@@ -91,8 +87,10 @@ int	main(void)
 		else
 			ft_printf("%s", line);
 		free(line);
+		line = get_next_line(fd);
 	}
-	ft_printf("\033[32mServer PID: %d\033[0m\n\033[32m[\033[0mBONUS MODE\033[32m]\033[0m\n", getpid());
+	ft_printf("\033[32mServer PID: %d\033[0m\n", getpid());
+	ft_printf("\033[32m[\033[0mBONUS MODE\033[32m]\033[0m\n");
 	signal(SIGUSR1, ft_listening_data);
 	signal(SIGUSR2, ft_listening_data);
 	while (1)
