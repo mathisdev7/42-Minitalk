@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.h                                           :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/20 16:00:00 by mazeghou          #+#    #+#             */
-/*   Updated: 2025/01/07 14:38:30 by mazeghou         ###   ########.fr       */
+/*   Created: 2025/01/07 15:17:47 by mazeghou          #+#    #+#             */
+/*   Updated: 2025/01/07 15:27:32 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-# define SERVER_H
+#include "../../includes/client.h"
+#include "../../includes/client_bonus.h"
 
-# include <fcntl.h>
-# include <signal.h>
-# include <stdlib.h>
-# include <unistd.h>
-
-extern char	*g_str;
-
-char		*ft_strjoin_mod(char *s1, char *s2);
-void		ft_listening_data(int sig, siginfo_t *info, void *context);
-char		*get_next_line(int fd);
-
-#endif
+int	calculate_delay(int len)
+{
+	if (len > 50000)
+		return (100);
+	if (len > 25000)
+		return (60);
+	if (len > 10000)
+		return (35);
+	return (15);
+}

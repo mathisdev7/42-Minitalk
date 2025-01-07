@@ -5,72 +5,53 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 16:27:49 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/20 01:00:16 by mazeghou         ###   ########.fr       */
+/*   Created: 2025/01/07 15:03:30 by mazeghou          #+#    #+#             */
+/*   Updated: 2025/01/07 15:04:28 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../get_next_line/get_next_line.h"
-#include "../../includes/server.h"
+#include "../../includes/server_bonus.h"
 #include "../../printf/ft_printf.h"
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-char	*g_str;
-
-char	*ft_strjoin_mod(char *s1, char *s2)
+void	bin_to_char(int signum, char *c)
 {
-	char	*join;
-	int		i;
-	int		j;
-
-	i = -1;
-	if (!s1)
-	{
-		s1 = malloc(sizeof(char) * 1);
-		s1[0] = '\0';
-	}
-	join = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (!join)
-		return (NULL);
-	while (s1[++i] != '\0')
-		join[i] = s1[i];
-	j = 0;
-	while (s2[j] != '\0')
-		join[i++] = s2[j++];
-	join[i++] = '\0';
-	free(s1);
-	return (join);
+	if (signum == SIGUSR1)
+		*c = (*c << 1) | 1;
+	else if (signum == SIGUSR2)
+		*c <<= 1;
 }
 
-void	ft_listening_data(int sig)
+void	sig_handler(int signum, siginfo_t *info, void *context)
 {
-	static int	bit;
-	static int	i;
-	char		*c1;
+	static int	pid = 0;
+	static char	c = 0;
+	static int	i = 0;
 
-	if (sig == SIGUSR1)
-		i |= (0x01 << bit);
-	bit++;
-	if (bit == 8)
+	(void)context;
+	if (pid == 0)
+		pid = info->si_pid;
+	bin_to_char(signum, &c);
+	i++;
+	if (i == 8)
 	{
-		c1 = (char *)malloc(sizeof(char) * 2);
-		if (!c1)
-			return ;
-		c1[0] = (char)i;
-		c1[1] = '\0';
-		g_str = ft_strjoin_mod(g_str, c1);
-		if (c1[0] == '\n')
-		{
-			ft_putstr_fd(g_str, 1);
-			free(g_str);
-			g_str = NULL;
-		}
-		bit = 0;
 		i = 0;
-		free(c1);
+		if (c == '\0')
+		{
+			kill(pid, SIGUSR1);
+			pid = 0;
+			ft_printf("\n");
+			return ;
+		}
+		ft_printf("%c", c);
+		c = 0;
 	}
+	kill(pid, SIGUSR2);
 }
 
-int	main(void)
+void	print_server_pid(void)
 {
 	int		fd;
 	char	*line;
@@ -91,8 +72,23 @@ int	main(void)
 	}
 	ft_printf("\033[32mServer PID: %d\033[0m\n", getpid());
 	ft_printf("\033[32m[\033[0mBONUS MODE\033[32m]\033[0m\n");
-	signal(SIGUSR1, ft_listening_data);
-	signal(SIGUSR2, ft_listening_data);
+}
+
+int	main(void)
+{
+	struct sigaction	sa;
+
+	print_server_pid();
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART | SA_SIGINFO;
+	sa.sa_sigaction = sig_handler;
+	if (sigaction(SIGUSR1, &sa, NULL) == -1
+		|| sigaction(SIGUSR2, &sa, NULL) == -1)
+	{
+		ft_printf("Error setting up signal handlers\n");
+		exit(EXIT_FAILURE);
+	}
 	while (1)
 		pause();
+	return (0);
 }

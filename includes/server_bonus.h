@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 16:20:00 by mazeghou          #+#    #+#             */
-/*   Updated: 2024/11/20 01:10:24 by mazeghou         ###   ########.fr       */
+/*   Updated: 2025/01/07 15:07:10 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 extern char	*g_str;
 
 char		*ft_strjoin_mod(char *s1, char *s2);
-void		ft_listening_data(int sig);
+void		ft_listening_data(int sig, int client_pid);
+char		*get_next_line(int fd);
 
 #endif
