@@ -6,7 +6,7 @@
 /*   By: mazeghou <mazeghou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 17:08:45 by mazeghou          #+#    #+#             */
-/*   Updated: 2025/01/07 15:28:06 by mazeghou         ###   ########.fr       */
+/*   Updated: 2025/01/11 20:17:07 by mazeghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-extern int		calculate_delay(int len);
 
 static int		g_receiver = 0;
 
@@ -71,7 +69,7 @@ int	main(int argc, char *argv[])
 
 	if (argc != 3)
 		return (ft_printf("You need to pass 2 args\n"));
-	pid = atoi(argv[1]);
+	pid = ft_atoi(argv[1]);
 	if (pid <= 0)
 		return (ft_printf("Invalid PID.\n"));
 	sigemptyset(&sa.sa_mask);
